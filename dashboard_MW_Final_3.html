@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard MW Digital</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f5;color:#111;min-height:100vh}
+.header{padding:1.25rem 1.5rem .5rem;border-bottom:1px solid #e0e0e0;background:#fff}
+.header h1{font-size:18px;font-weight:700;color:#0066cc}
+.header p{font-size:12px;color:#888;margin-top:2px}
+/* TABS */
+.main-tabs{display:flex;gap:0;border-bottom:1px solid #e0e0e0;padding:0 1.5rem;background:#fff;overflow-x:auto}
+.main-tab{font-size:13px;padding:10px 18px;cursor:pointer;border:none;background:transparent;color:#888;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.main-tab.active{color:#0066cc;border-bottom:2px solid #0066cc;font-weight:600}
+.main-tab:hover{color:#333}
+.sub-tabs{display:flex;gap:0;border-bottom:1px solid #e8e8e8;padding:0 1.5rem;background:#fafafa;overflow-x:auto}
+.sub-tab{font-size:12px;padding:8px 14px;cursor:pointer;border:none;background:transparent;color:#aaa;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.sub-tab.active{color:#0066cc;border-bottom:2px solid #0066cc;font-weight:500}
+.sub-tab:hover{color:#555}
+.content{padding:1.25rem 1.5rem}
+/* BTNS */
+.btn{font-size:12px;padding:6px 13px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#555;cursor:pointer}
+.btn:hover{border-color:#0066cc;color:#0066cc}
+.btn-blue{background:#0066cc;color:#fff;border-color:#0066cc;font-weight:600}
+.btn-blue:hover{background:#0055aa}
+.btn-red{border-color:#ffcccc;color:#cc3333}
+.btn-red:hover{border-color:#cc3333;background:#fff5f5}
+/* METRICS */
+.metrics{display:flex;gap:10px;margin-bottom:1.25rem;flex-wrap:wrap}
+.metric{background:#fff;border:1px solid #e8e8e8;border-radius:10px;padding:.75rem 1rem;min-width:120px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.metric .lbl{font-size:11px;color:#999;margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em}
+.metric .val{font-size:22px;font-weight:700;color:#111}
+.metric .sub{font-size:11px;color:#bbb;margin-top:2px}
+/* SECTION */
+.sec{font-size:11px;font-weight:700;color:#aaa;margin:1.25rem 0 .75rem;text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center;justify-content:space-between}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.25rem}
+@media(max-width:640px){.grid2{grid-template-columns:1fr}.charts-grid{grid-template-columns:1fr!important}}
+.card{background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:1rem 1.25rem;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.card h3{font-size:11px;font-weight:700;color:#bbb;margin-bottom:1rem;text-transform:uppercase;letter-spacing:.04em}
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.bar-lbl{font-size:12px;color:#555;min-width:140px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-wrap{flex:1;height:7px;background:#f0f0f0;border-radius:4px;overflow:hidden}
+.bar{height:7px;border-radius:4px}
+.bar-val{font-size:11px;color:#aaa;min-width:24px;text-align:right}
+/* TABLE */
+.tbl-wrap{overflow-x:auto;border:1px solid #e8e8e8;border-radius:12px;margin-bottom:1.25rem;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+table{border-collapse:collapse;min-width:100%}
+thead tr{background:#fafafa}
+th{padding:8px 8px;text-align:center;font-weight:600;color:#999;font-size:10px;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #eeeeee;white-space:nowrap}
+th.col-fix{text-align:left;min-width:150px;position:sticky;left:0;background:#fafafa;z-index:3}
+th.col-comm{background:#f0f8f0;color:#2a8a2a}
+th.col-tech{background:#f0f5ff;color:#1a5acc}
+th.col-comp{background:#f8f0ff;color:#7733cc}
+td{padding:0;border-bottom:1px solid #f5f5f5;vertical-align:middle}
+td.col-fix{padding:6px 10px;font-size:12px;color:#333;position:sticky;left:0;background:#fff;z-index:1;border-right:1px solid #eeeeee;white-space:nowrap}
+tr:hover td.col-fix{background:#fafeff}
+tr:last-child td{border-bottom:none}
+td.t-comm{background:#f7fff7}
+td.t-tech{background:#f0f5ff}
+td.t-comp{background:#faf5ff}
+th.t-comm{background:#e8f8e8;color:#1a7a1a}
+th.t-tech{background:#ddeeff;color:#0044bb}
+th.t-comp{background:#eeddff;color:#6622bb}
+/* CELL */
+.cell-w{position:relative;width:100%}
+.cell-sel{width:100%;height:28px;background:transparent;border:none;font-size:11px;text-align:center;cursor:pointer;padding:0 2px;outline:none;-webkit-appearance:none;appearance:none;color:#555}
+.cell-sel:hover{background:#f8f8f8}
+.cell-sel:focus{outline:2px solid #0066cc;background:#f0f8ff}
+.cell-sel option{background:#fff;color:#111}
+.dot{position:absolute;top:4px;right:4px;width:5px;height:5px;border-radius:50%;pointer-events:none;cursor:pointer}
+/* saldo */
+.saldo-input{width:100%;height:30px;background:transparent;border:none;font-size:12px;text-align:center;padding:0 4px;outline:none;color:#0066cc;font-weight:600}
+.saldo-input:focus{background:#f0f8ff;outline:2px solid #0066cc}
+.saldo-input::placeholder{color:#ddd}
+/* Status colors — comm */
+.vc-relatorio{color:#1a6acc}.vc-entrega{color:#0066cc}.vc-feedback{color:#2a8a2a}
+.vc-cliente{color:#7733cc}.vc-cobrar{color:#cc2222}.vc-perguntou{color:#cc7700}.vc-nada{color:#ccc}
+/* Status colors — tech */
+.vt-sat{color:#2a8a2a}.vt-otim{color:#0066cc}.vt-janela{color:#bbb}
+.vt-criativos{color:#cc7700}.vt-saldo{color:#cc2222}.vt-saldo_fin{color:#cc7700}
+.vt-pausada{color:#bbb}.vt-dep_ext{color:#cc7700}.vt-reuniao{color:#cc2222}
+.vt-start{color:#7733cc}.vt-nsat{color:#cc2222}
+/* Status colors — comp */
+.vp-pendente{color:#cc7700}.vp-feito{color:#2a8a2a}.vp-parcial{color:#0066cc}
+.vp-nao_feito{color:#cc2222}.vp-aguardando{color:#aaa}
+/* BADGES */
+.badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600}
+.bg-green{background:#eafaea;color:#1a7a1a;border:1px solid #b8eab8}
+.bg-blue{background:#e8f2ff;color:#0055bb;border:1px solid #b8d5ff}
+.bg-amber{background:#fff8e8;color:#cc7700;border:1px solid #ffddaa}
+.bg-red{background:#fff0f0;color:#cc2222;border:1px solid #ffbbbb}
+.bg-gray{background:#f5f5f5;color:#aaa;border:1px solid #ddd}
+.bg-purple{background:#f5eeff;color:#6622bb;border:1px solid #ddbbff}
+/* WEEK NAV */
+.week-nav{display:flex;align-items:center;gap:8px;margin-bottom:1rem}
+.week-nav button{font-size:12px;padding:4px 10px;border-radius:7px;border:1px solid #ddd;background:#fff;color:#777;cursor:pointer}
+.week-nav button:hover{border-color:#0066cc;color:#0066cc}
+.week-lbl{font-size:13px;color:#888;min-width:125px;text-align:center}
+/* PILL */
+.pill-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1rem}
+.pill{font-size:11px;padding:3px 10px;border-radius:20px;background:#f5f5f5;border:1px solid #e8e8e8;color:#555}
+/* MODAL */
+.modal-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:100;padding:1rem}
+.modal{background:#fff;border-radius:14px;border:1px solid #e0e0e0;padding:1.5rem;width:100%;max-width:420px;max-height:90vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.15)}
+.modal h3{font-size:15px;font-weight:700;margin-bottom:1.25rem;color:#0066cc}
+.field{margin-bottom:12px}
+.field label{font-size:11px;color:#999;display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em;font-weight:600}
+.field input,.field select,.field textarea{width:100%;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#111;outline:none;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#0066cc;box-shadow:0 0 0 3px rgba(0,102,204,.1)}
+.modal-btns{display:flex;justify-content:flex-end;gap:8px;margin-top:1.25rem;flex-wrap:wrap}
+.overdue{color:#cc2222!important;font-weight:600}
+/* COMP TABLE */
+.comp-table{width:100%;border-collapse:collapse;font-size:12px}
+.comp-table th{padding:8px 10px;text-align:left;font-weight:600;color:#aaa;font-size:11px;text-transform:uppercase;border-bottom:1px solid #eee}
+.comp-table td{padding:8px 10px;border-bottom:1px solid #f5f5f5;color:#444;vertical-align:top}
+.comp-table tr:last-child td{border-bottom:none}
+.comp-table tr:hover td{background:#fafafa}
+
+.asana-wrap{margin-bottom:1.25rem}
+.asana-title{font-size:11px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem;display:flex;align-items:center;gap:8px}
+.asana-pill{font-size:10px;background:#f3eeff;color:#6a3db5;padding:2px 8px;border-radius:20px;font-weight:600}
+.asana-sections{display:flex;gap:10px;flex-wrap:wrap}
+.asana-sec-card{background:#fff;border:1.5px solid #e0e4eb;border-radius:10px;padding:.75rem 1rem;flex:1;min-width:140px;max-width:220px}
+.asana-sec-card.has-overdue{border-color:#fcc;border-left:4px solid #d43f3f}
+.asana-sec-card.has-today{border-color:#f0d080;border-left:4px solid #c07a10}
+.asana-sec-card.all-ok{border-color:#b6e8c8;border-left:4px solid #2a8a4a}
+.asana-sec-name{font-size:11px;font-weight:600;color:#555;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.asana-sec-count{font-size:22px;font-weight:700;line-height:1}
+.asana-sec-count.red{color:#d43f3f}
+.asana-sec-count.amber{color:#c07a10}
+.asana-sec-count.green{color:#2a8a4a}
+.asana-sec-sub{font-size:10px;color:#aaa;margin-top:2px}
+.asana-sec-link{font-size:10px;color:#0070cc;text-decoration:none;display:inline-block;margin-top:6px}
+.asana-sec-link:hover{text-decoration:underline}
+.asana-loading{font-size:12px;color:#aaa;padding:.4rem 0}
+.asana-err{font-size:12px;color:#d43f3f;padding:.6rem;background:#fff5f5;border-radius:8px}
+</style>
+</head>
+<body>
+<div class="header"><h1>MW Digital</h1><p>Acompanhamento diário da equipe</p></div>
+<div class="main-tabs" id="mainTabs"></div>
+<div class="sub-tabs" id="subTabs" style="display:none"></div>
+<div class="content" id="mainContent"></div>
+<div id="modalContainer"></div>
+<script>
+const ASSESSORES=["Gabriella","Gustavo","Gabriel","Julio"];
+const DEFAULT_CLIENTS={
+  "Gabriella":["RE+","NENA PAIVA","PIZZERIA VESUVIO","MIMOS","ENCANTO MÓVEIS","CLEICE","DR. VIRGILIO","DR. RENATO TRINTA","DR. FLAVIO","DALENA","SOUL COSMÉTICOS","DEGUTTI REC E TAM","DRA. LARYSSA AZEVEDO","BUDDHA SPA"],
+  "Gustavo":["ANTESE","B'LASER","BELLA SEDA","CLAUDIA MARTINS","CUIDAR MEDICINA FETAL","DR RENATO NOVAES","ROOFTOP 17","DR PEDRO FALCÃO","DR JHOLBERT","DR EDUARDO SANSOLO","DRA LARA DRUMMOND","VM GLASS","INSTITUTO CBM","BELO IN CONCERT","SEM COMPROMISSO"],
+  "Gabriel":["MEDICAL","ORTHO PAUHER","TESTE DUE/HUB NOGUEIRA","IMPÉRIO ROCHA","HENRIQUE QUEIROZ","FIND FISIOTERAPIA","BRUNO BARROS","CHICA PITANGA","FOCUS","YON SAN","ROCK REC","SAMBAR E LOVE","SEIRYU","AGENCIA KRIA","DENSTYSA","ENCRUZILHADA","LITORALIZE","BEM BLACK"],
+  "Julio":["LISLASER","DR FILIPE BISSOLI","DI BRANCO","DA WAL CONFEITARIA","DR DIMAS","MARIANNE TAVARES","LIDER SAUDE AMBIENTAL","GRUPO M BARROS","BUFFET ANDRÉA GUERRA","DOIS TONS","CANTINA DO LUIGI","PLS EMPREENDIMENTOS","PONTO DO AÇAÍ","TERRAÇO CAPIBARIBE","ONDA COZINHA DO MAR","AGÊNCIA KRIA"]
+};
+const COMM_OPTS=[{v:"",l:"—"},{v:"relatorio",l:"Relatório"},{v:"entrega",l:"Entrega Task"},{v:"feedback",l:"Feedback"},{v:"cliente",l:"Cliente Falou"},{v:"cobrar",l:"Cobrar Pend."},{v:"perguntou",l:"Perguntou"},{v:"nada",l:"Sem nec."}];
+const TECH_OPTS=[{v:"",l:"—"},{v:"sat",l:"Resultados ok"},{v:"otim",l:"Otimização"},{v:"janela",l:"Janela análise"},{v:"criativos",l:"Nec. criativos"},{v:"saldo",l:"Saldo esgotado"},{v:"saldo_fin",l:"Saldo finalizando"},{v:"nsat",l:"Result. ruins"},{v:"pausada",l:"Pausada"},{v:"dep_ext",l:"Dep. externa"},{v:"reuniao",l:"Reunião urgente"},{v:"start",l:"Em start"}];
+const COMP_OPTS=[{v:"",l:"—"},{v:"pendente",l:"Pendente"},{v:"feito",l:"Feito"},{v:"parcial",l:"Parcial"},{v:"nao_feito",l:"Não feito"},{v:"aguardando",l:"Aguardando"}];
+const COMP_COLORS={pendente:"bg-amber",feito:"bg-green",parcial:"bg-blue",nao_feito:"bg-red",aguardando:"bg-gray"};
+const NEEDS_COMMENT_COMM=["entrega","cobrar"];
+const NEEDS_COMMENT_TECH=["sat","otim"];
+const MON=1,THU=4,FRI=5;
+
+let S=JSON.parse(localStorage.getItem('mw_v6')||'null')||{clients:{},data:{},commits:{},saldo:{}};
+ASSESSORES.forEach(a=>{
+  if(!S.clients[a])S.clients[a]=[...DEFAULT_CLIENTS[a]];
+  if(!S.data[a])S.data[a]={};
+  if(!S.commits[a])S.commits[a]=[];
+  if(!S.saldo[a])S.saldo[a]={};
+});
+function save(){localStorage.setItem('mw_v6',JSON.stringify(S));}
+
+let weekOffset=0;
+function getWorkDates(off){
+  const t=new Date(),day=t.getDay(),mon=new Date(t);
+  mon.setDate(t.getDate()-(day===0?6:day-1)+off*7);
+  return Array.from({length:5},(_,i)=>{const d=new Date(mon);d.setDate(mon.getDate()+i);return d;});
+}
+function dk(d){return d.toISOString().slice(0,10);}
+function isToday(d){return d.toDateString()===new Date().toDateString();}
+function dow(d){return d.getDay();}
+function fmtDate(d){return d.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit'});}
+function weekLbl(off){const ds=getWorkDates(off);const f=d=>d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});return f(ds[0])+' – '+f(ds[4]);}
+function fmtShort(str){if(!str)return'—';const[y,m,d]=str.split('-');return`${d}/${m}`;}
+function isOverdue(ds,st){if(!ds||st==='feito')return false;return new Date(ds)<new Date();}
+function getFriday(monStr){const d=new Date(monStr);d.setDate(d.getDate()+4);return dk(d);}
+
+let currentMain='visao_geral';
+let currentSub={};
+ASSESSORES.forEach(a=>currentSub[a]='atividade');
+
+function renderTabs(){
+  document.getElementById('mainTabs').innerHTML=['visao_geral',...ASSESSORES].map(t=>`
+    <button class="main-tab${t===currentMain?' active':''}" onclick="switchMain('${t}')">${t==='visao_geral'?'Visão Geral':t}</button>`).join('');
+  const stEl=document.getElementById('subTabs');
+  if(ASSESSORES.includes(currentMain)){
+    stEl.style.display='flex';
+    stEl.innerHTML=['atividade','saldo'].map(s=>`
+      <button class="sub-tab${currentSub[currentMain]===s?' active':''}" onclick="switchSub('${s}')">${s==='atividade'?'Atividade':'Saldo de Anúncios'}</button>`).join('');
+  } else stEl.style.display='none';
+}
+function switchMain(t){currentMain=t;renderTabs();renderContent();}
+function switchSub(s){currentSub[currentMain]=s;renderTabs();renderContent();}
+
+// ── OVERVIEW ─────────────────────────────────────────────────────────────────
+function renderOverview(){
+  const dates=getWorkDates(weekOffset);
+  let totalC=0,totalCobrar=0,totalSaldo=0,totalComps=0,totalDone=0;
+  ASSESSORES.forEach(a=>{
+    totalC+=S.clients[a].length;
+    dates.forEach(d=>{S.clients[a].forEach(c=>{
+      const comm=(S.data[a]?.[dk(d)]?.[c]?.comm)||'';
+      const tech=(S.data[a]?.[dk(d)]?.[c]?.tech)||'';
+      if(comm==='cobrar')totalCobrar++;
+      if(tech==='saldo'||tech==='saldo_fin')totalSaldo++;
+    });});
+    S.commits[a].forEach(cp=>{totalComps++;if(cp.status==='feito')totalDone++;});
+  });
+  const allCommLbls=Object.fromEntries(COMM_OPTS.map(o=>[o.v,o.l]));
+  const allTechLbls=Object.fromEntries(TECH_OPTS.map(o=>[o.v,o.l]));
+
+  let html=`
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:8px">
+    <div style="font-size:15px;font-weight:700;color:#111">Visão Geral da Equipe</div>
+    <div class="week-nav" style="margin:0">
+      <button onclick="weekOffset--;renderContent()">&#8592;</button>
+      <span class="week-lbl">${weekLbl(weekOffset)}</span>
+      <button onclick="weekOffset++;renderContent()">&#8594;</button>
+      ${weekOffset?`<button class="btn" onclick="weekOffset=0;renderContent()">Hoje</button>`:''}
+    </div>
+  </div>
+  <div class="metrics">
+    <div class="metric"><div class="lbl">Total clientes</div><div class="val">${totalC}</div></div>
+    <div class="metric"><div class="lbl">Cobranças</div><div class="val" style="color:${totalCobrar?'#cc2222':'#2a8a2a'}">${totalCobrar}</div></div>
+    <div class="metric"><div class="lbl">Saldo crítico</div><div class="val" style="color:${totalSaldo?'#cc7700':'#2a8a2a'}">${totalSaldo}</div></div>
+    <div class="metric"><div class="lbl">Compromissos</div><div class="val">${totalDone}/${totalComps}</div></div>
+  </div>
+  <div class="sec">Resumo por assessor</div>
+  <div class="grid2">`;
+
+  ASSESSORES.forEach(a=>{
+    const cc={},tc={};
+    dates.forEach(d=>{S.clients[a].forEach(c=>{
+      const cv=(S.data[a]?.[dk(d)]?.[c]?.comm)||'';
+      const tv=(S.data[a]?.[dk(d)]?.[c]?.tech)||'';
+      if(cv)cc[cv]=(cc[cv]||0)+1;
+      if(tv)tc[tv]=(tc[tv]||0)+1;
+    });});
+    const pending=S.commits[a].filter(cp=>cp.status!=='feito').length;
+    const overdue=S.commits[a].filter(cp=>isOverdue(cp.deadline,cp.status)).length;
+    const topC=Object.entries(cc).sort((a,b)=>b[1]-a[1]).slice(0,4);
+    const topT=Object.entries(tc).sort((a,b)=>b[1]-a[1]).slice(0,4);
+    html+=`<div class="card"><h3>${a} <span style="font-weight:400;color:#ccc">(${S.clients[a].length} clientes)</span></h3>
+      ${topC.length?`<div style="font-size:10px;color:#bbb;margin-bottom:5px;font-weight:700">COMUNICAÇÃO</div>`:''}
+      ${topC.map(([k,v])=>`<div class="bar-row"><div class="bar-lbl">${allCommLbls[k]||k}</div><div class="bar-wrap"><div class="bar" style="width:${Math.min(v*7,100)}%;background:#0066cc"></div></div><div class="bar-val">${v}</div></div>`).join('')}
+      ${topT.length?`<div style="font-size:10px;color:#bbb;margin:8px 0 5px;font-weight:700">STATUS DAS CONTAS</div>`:''}
+      ${topT.map(([k,v])=>`<div class="bar-row"><div class="bar-lbl">${allTechLbls[k]||k}</div><div class="bar-wrap"><div class="bar" style="width:${Math.min(v*7,100)}%;background:#2a8a2a"></div></div><div class="bar-val">${v}</div></div>`).join('')}
+      <div style="display:flex;gap:6px;margin-top:12px;flex-wrap:wrap">
+        ${overdue?`<span class="badge bg-red">${overdue} vencidos</span>`:''}
+        ${pending&&!overdue?`<span class="badge bg-amber">${pending} pendentes</span>`:''}
+        ${!pending&&!overdue?`<span class="badge bg-green">Compromissos ok</span>`:''}
+      </div></div>`;
+  });
+  html+=`</div>`;
+
+  const od=ASSESSORES.flatMap(a=>S.commits[a].filter(cp=>isOverdue(cp.deadline,cp.status)).map(cp=>({...cp,a})));
+  if(od.length){
+    html+=`<div class="sec">Compromissos vencidos</div>
+    <div class="tbl-wrap"><table class="comp-table">
+      <thead><tr><th>Assessor</th><th>Cliente</th><th>O que vai fazer</th><th>O que vai enviar</th><th>Prazo</th><th>Status</th></tr></thead>
+      <tbody>${od.map(cp=>`<tr>
+        <td style="font-weight:600;color:#111">${cp.a}</td><td>${cp.client||'—'}</td>
+        <td style="max-width:140px">${cp.action||'—'}</td>
+        <td style="max-width:130px;color:#0066cc">${cp.deliver||'—'}</td>
+        <td class="overdue">${fmtShort(cp.deadline)}</td>
+        <td><span class="badge ${COMP_COLORS[cp.status]||'bg-gray'}">${cp.status||'—'}</span></td>
+      </tr>`).join('')}</tbody>
+    </table></div>`;
+  }
+  document.getElementById('mainContent').innerHTML=html;
+  if(ASSESSORES.includes(currentMain)&&currentSub[currentMain]==='atividade') loadAsanaBlock(currentMain);
+}
+
+// ── ATIVIDADE ─────────────────────────────────────────────────────────────────
+function renderAtividade(a){
+  const clients=S.clients[a];
+  const dates=getWorkDates(weekOffset);
+  const cc={},tc={},pc={};
+  dates.forEach(d=>{clients.forEach(c=>{
+    const cv=(S.data[a]?.[dk(d)]?.[c]?.comm)||'';
+    const tv=(S.data[a]?.[dk(d)]?.[c]?.tech)||'';
+    const pv=(S.data[a]?.[dk(d)]?.[c]?.comp)||'';
+    if(cv)cc[cv]=(cc[cv]||0)+1;
+    if(tv)tc[tv]=(tc[tv]||0)+1;
+    if(pv)pc[pv]=(pc[pv]||0)+1;
+  });});
+  const allLbls={...Object.fromEntries(COMM_OPTS.map(o=>[o.v,o.l])),...Object.fromEntries(TECH_OPTS.map(o=>[o.v,o.l])),...Object.fromEntries(COMP_OPTS.map(o=>[o.v,o.l]))};
+  const cobrar=(cc['cobrar']||0);
+  const saldoCrit=(tc['saldo']||0)+(tc['saldo_fin']||0);
+  const openComps=S.commits[a].filter(cp=>cp.status!=='feito').length;
+  const overdueComps=S.commits[a].filter(cp=>isOverdue(cp.deadline,cp.status)).length;
+
+  let html=`
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px">
+    <div><div style="font-size:15px;font-weight:700;color:#111">${a}</div><div style="font-size:12px;color:#aaa;margin-top:1px">${clients.length} clientes ativos</div></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn" onclick="openAddClient('${a}')">+ Cliente</button>
+      <button class="btn btn-blue" onclick="openAddCommit('${a}')">+ Compromisso</button>
+    </div>
+  </div>
+  <div class="metrics">
+    <div class="metric"><div class="lbl">Clientes</div><div class="val">${clients.length}</div></div>
+    <div class="metric"><div class="lbl">Cobranças</div><div class="val" style="color:${cobrar?'#cc2222':'#2a8a2a'}">${cobrar}</div></div>
+    <div class="metric"><div class="lbl">Saldo crítico</div><div class="val" style="color:${saldoCrit?'#cc7700':'#2a8a2a'}">${saldoCrit}</div></div>
+    <div class="metric"><div class="lbl">Comp. abertos</div><div class="val" style="color:${overdueComps?'#cc2222':'#111'}">${openComps}</div></div>
+  </div>`;
+
+  html+=`<div class="asana-wrap"><div class="asana-title">Tarefas atrasadas <span class="asana-pill">Asana</span></div><div id="asana-${a}" class="asana-loading">⏳ Carregando...</div></div>`;
+  const allCounts=[...Object.entries(cc),...Object.entries(tc),...Object.entries(pc)];
+  if(allCounts.length){
+    html+=`<div class="pill-row">${allCounts.sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<span class="pill vc-${k} vt-${k} vp-${k}">${allLbls[k]||k}: <strong>${v}</strong></span>`).join('')}</div>`;
+  }
+
+  // ── CHARTS ─────────────────────────────────────────────────────────────────
+  // Data for bar chart: comm + tech counts
+  const barCommKeys=Object.keys(cc).sort((a,b)=>cc[b]-cc[a]).slice(0,6);
+  const barTechKeys=Object.keys(tc).sort((a,b)=>tc[b]-tc[a]).slice(0,6);
+
+  // Data for line chart: saldo per day (sum all clients)
+  const saldoByDay=dates.map(d=>{
+    let t=0;
+    clients.forEach(c=>{t+=parseFloat((S.saldo[a]?.[dk(d)]?.[c])||0);});
+    return{label:d.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit'}),val:Math.round(t)};
+  });
+  const maxSaldo=Math.max(...saldoByDay.map(d=>d.val),1);
+
+  // Data for donut: comm distribution
+  const donutTotal=Object.values(cc).reduce((s,v)=>s+v,0)||1;
+  const donutColors={'relatorio':'#1a6fb5','entrega':'#0070cc','feedback':'#2a8a4a','cliente':'#6a3db5','cobrar':'#d43f3f','perguntou':'#c07a10','nada':'#ccc'};
+
+  // build donut SVG paths
+  function donutPaths(data,total,cx,cy,r,stroke){
+    let angle=-Math.PI/2,paths='';
+    Object.entries(data).forEach(([k,v])=>{
+      const sweep=2*Math.PI*(v/total);
+      const x1=cx+r*Math.cos(angle),y1=cy+r*Math.sin(angle);
+      angle+=sweep;
+      const x2=cx+r*Math.cos(angle),y2=cy+r*Math.sin(angle);
+      const large=sweep>Math.PI?1:0;
+      const color=donutColors[k]||'#aaa';
+      paths+=`<path d="M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${large},1 ${x2},${y2} Z" fill="${color}" opacity="0.85"/>`;
+    });
+    // inner white circle for donut effect
+    paths+=`<circle cx="${cx}" cy="${cy}" r="${r*0.52}" fill="white"/>`;
+    return paths;
+  }
+
+  // legend for donut
+  const donutLegend=Object.entries(cc).sort((a,b)=>b[1]-a[1]).map(([k,v])=>{
+    const color=donutColors[k]||'#aaa';
+    const pct=Math.round(v/donutTotal*100);
+    return`<div style="display:flex;align-items:center;gap:5px;margin-bottom:4px"><div style="width:10px;height:10px;border-radius:2px;background:${color};flex-shrink:0"></div><span style="font-size:11px;color:#555">${allLbls[k]||k}: <strong>${v}</strong> (${pct}%)</span></div>`;
+  }).join('');
+
+  const hasChartData=barCommKeys.length||barTechKeys.length||saldoByDay.some(d=>d.val>0);
+
+  if(hasChartData){
+    html+=`<div class="sec">Gráficos da semana</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:1.5rem">
+
+      <!-- BAR: Comunicação -->
+      <div class="card" style="min-width:0">
+        <h3>Comunicação</h3>
+        ${barCommKeys.length?`<div style="display:flex;flex-direction:column;gap:6px">
+          ${barCommKeys.map(k=>{
+            const v=cc[k];
+            const max=Math.max(...Object.values(cc));
+            const pct=Math.round(v/max*100);
+            const colors={'relatorio':'#1a6fb5','entrega':'#0070cc','feedback':'#2a8a4a','cliente':'#6a3db5','cobrar':'#d43f3f','perguntou':'#c07a10','nada':'#ddd'};
+            return`<div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:#555;margin-bottom:3px"><span>${allLbls[k]||k}</span><strong>${v}</strong></div>
+              <div style="height:8px;background:#f0f2f6;border-radius:4px;overflow:hidden"><div style="height:8px;width:${pct}%;background:${colors[k]||'#0070cc'};border-radius:4px;transition:width .3s"></div></div>
+            </div>`;
+          }).join('')}
+        </div>`:`<div style="text-align:center;color:#ccc;font-size:12px;padding:1rem 0">Sem dados</div>`}
+      </div>
+
+      <!-- BAR: Status de conta -->
+      <div class="card" style="min-width:0">
+        <h3>Status das contas</h3>
+        ${barTechKeys.length?`<div style="display:flex;flex-direction:column;gap:6px">
+          ${barTechKeys.map(k=>{
+            const v=tc[k];
+            const max=Math.max(...Object.values(tc));
+            const pct=Math.round(v/max*100);
+            const colors={'sat':'#2a8a4a','otim':'#0070cc','janela':'#aaa','criativos':'#c07a10','saldo':'#d43f3f','saldo_fin':'#c07a10','nsat':'#d43f3f','pausada':'#aaa','dep_ext':'#c07a10','reuniao':'#d43f3f','start':'#6a3db5'};
+            return`<div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:#555;margin-bottom:3px"><span>${allLbls[k]||k}</span><strong>${v}</strong></div>
+              <div style="height:8px;background:#f0f2f6;border-radius:4px;overflow:hidden"><div style="height:8px;width:${pct}%;background:${colors[k]||'#2a8a4a'};border-radius:4px;transition:width .3s"></div></div>
+            </div>`;
+          }).join('')}
+        </div>`:`<div style="text-align:center;color:#ccc;font-size:12px;padding:1rem 0">Sem dados</div>`}
+      </div>
+
+      <!-- DONUT: distribuição comunicação + linha saldo -->
+      <div class="card" style="min-width:0">
+        <h3>Distribuição comunicação</h3>
+        ${Object.keys(cc).length?`
+        <div style="display:flex;align-items:center;gap:12px">
+          <svg width="90" height="90" viewBox="0 0 90 90" style="flex-shrink:0">
+            ${donutPaths(cc,donutTotal,45,45,38,2)}
+          </svg>
+          <div style="flex:1;min-width:0">${donutLegend}</div>
+        </div>`:`<div style="text-align:center;color:#ccc;font-size:12px;padding:1rem 0">Sem dados</div>`}
+
+        ${saldoByDay.some(d=>d.val>0)?`
+        <div style="margin-top:1rem;border-top:1px solid #f0f2f6;padding-top:.75rem">
+          <div style="font-size:11px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.5rem">Saldo total por dia (R$)</div>
+          <svg width="100%" height="60" viewBox="0 0 220 60" preserveAspectRatio="none">
+            <!-- grid lines -->
+            <line x1="0" y1="0" x2="220" y2="0" stroke="#f0f2f6" stroke-width="1"/>
+            <line x1="0" y1="30" x2="220" y2="30" stroke="#f0f2f6" stroke-width="1"/>
+            <line x1="0" y1="58" x2="220" y2="58" stroke="#f0f2f6" stroke-width="1"/>
+            <!-- area fill -->
+            <polyline points="${saldoByDay.map((d,i)=>`${i*(220/4)},${58-(d.val/maxSaldo)*52}`).join(' ')}" fill="none" stroke="#0070cc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <polygon points="0,58 ${saldoByDay.map((d,i)=>`${i*(220/4)},${58-(d.val/maxSaldo)*52}`).join(' ')} ${220},58" fill="#e5f0ff" opacity="0.7"/>
+            <!-- dots -->
+            ${saldoByDay.map((d,i)=>d.val>0?`<circle cx="${i*(220/4)}" cy="${58-(d.val/maxSaldo)*52}" r="3" fill="#0070cc"/>`:``).join('')}
+          </svg>
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:#bbb;margin-top:2px">
+            ${saldoByDay.map(d=>`<span>${d.label}</span>`).join('')}
+          </div>
+        </div>`:''}
+      </div>
+
+    </div>`;
+  }
+
+  html+=`<div class="week-nav">
+    <button onclick="weekOffset--;renderContent()">&#8592;</button>
+    <span class="week-lbl">${weekLbl(weekOffset)}</span>
+    <button onclick="weekOffset++;renderContent()">&#8594;</button>
+    ${weekOffset?`<button class="btn" onclick="weekOffset=0;renderContent()">Hoje</button>`:''}
+  </div>
+  <div class="tbl-wrap"><table><thead><tr><th class="col-fix">Cliente</th>`;
+
+  dates.forEach(d=>{
+    const td=isToday(d);
+    const dl=fmtDate(d);
+    html+=`<th class="${td?'t-comm':'col-comm'}" style="min-width:78px">${dl}<br><span style="font-size:9px">Comunicação</span></th>`;
+    html+=`<th class="${td?'t-tech':'col-tech'}" style="min-width:78px"><br><span style="font-size:9px">Status conta</span></th>`;
+    html+=`<th class="${td?'t-comp':'col-comp'}" style="min-width:78px"><br><span style="font-size:9px">Compromisso</span></th>`;
+  });
+  html+=`<th style="min-width:36px"></th></tr></thead><tbody>`;
+
+  clients.forEach(c=>{
+    const cS=c.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    html+=`<tr><td class="col-fix">${c}</td>`;
+    dates.forEach(d=>{
+      const dkey=dk(d);const td=isToday(d);const dw=dow(d);
+      const cv=(S.data[a]?.[dkey]?.[c]?.comm)||'';
+      const ccn=(S.data[a]?.[dkey]?.[c]?.comm_comment)||'';
+      const tv=(S.data[a]?.[dkey]?.[c]?.tech)||'';
+      const tcn=(S.data[a]?.[dkey]?.[c]?.tech_comment)||'';
+      const pv=(S.data[a]?.[dkey]?.[c]?.comp)||'';
+      html+=`<td class="${td?'t-comm':''}"><div class="cell-w">
+        <select class="cell-sel vc-${cv}" onchange="onCommChange('${a}','${dkey}','${cS}',this.value,${dw})">
+          ${COMM_OPTS.map(o=>`<option value="${o.v}"${cv===o.v?' selected':''}>${o.l}</option>`).join('')}
+        </select>
+        ${cv&&NEEDS_COMMENT_COMM.includes(cv)?`<div class="dot" style="background:${ccn?'#0066cc':'#ddd'}" onclick="openComment('${a}','${dkey}','${cS}','comm','${ccn.replace(/'/g,"\\'")}','${cv}')"></div>`:''}
+      </div></td>`;
+      html+=`<td class="${td?'t-tech':''}"><div class="cell-w">
+        <select class="cell-sel vt-${tv}" onchange="onTechChange('${a}','${dkey}','${cS}',this.value)">
+          ${TECH_OPTS.map(o=>`<option value="${o.v}"${tv===o.v?' selected':''}>${o.l}</option>`).join('')}
+        </select>
+        ${tv&&NEEDS_COMMENT_TECH.includes(tv)?`<div class="dot" style="background:${tcn?'#0066cc':'#ddd'}" onclick="openComment('${a}','${dkey}','${cS}','tech','${tcn.replace(/'/g,"\\'")}','${tv}')"></div>`:''}
+      </div></td>`;
+      html+=`<td class="${td?'t-comp':''}"><div class="cell-w">
+        <select class="cell-sel vp-${pv}" onchange="onCompChange('${a}','${dkey}','${cS}',this.value,${dw})">
+          ${COMP_OPTS.map(o=>`<option value="${o.v}"${pv===o.v?' selected':''}>${o.l}</option>`).join('')}
+        </select>
+      </div></td>`;
+    });
+    html+=`<td style="text-align:center;padding:0 4px"><button class="btn btn-red" style="font-size:10px;padding:2px 6px" onclick="removeClient('${a}','${cS}')">✕</button></td></tr>`;
+  });
+  html+=`</tbody></table></div>`;
+
+  html+=`<div class="sec"><span>Compromissos</span><button class="btn btn-blue" style="font-size:11px" onclick="openAddCommit('${a}')">+ Novo</button></div>
+  <div class="tbl-wrap"><table class="comp-table">
+    <thead><tr><th>Cliente</th><th>O que vai fazer</th><th>O que vai enviar</th><th>Prazo</th><th>Status</th><th>Obs</th><th></th></tr></thead>
+    <tbody>${S.commits[a].length?S.commits[a].map((cp,i)=>`<tr>
+      <td style="font-weight:600;color:#111;white-space:nowrap">${cp.client||'—'}</td>
+      <td style="max-width:140px">${cp.action||'—'}</td>
+      <td style="max-width:130px;color:#0066cc">${cp.deliver||'—'}</td>
+      <td class="${isOverdue(cp.deadline,cp.status)?'overdue':''}">${fmtShort(cp.deadline)}</td>
+      <td><span class="badge ${COMP_COLORS[cp.status]||'bg-gray'}">${cp.status||'—'}</span></td>
+      <td style="font-size:11px;color:#aaa;max-width:110px">${cp.obs||'—'}</td>
+      <td><button class="btn" style="font-size:10px;padding:2px 7px" onclick="openEditCommit('${a}',${i})">Editar</button></td>
+    </tr>`).join(''):`<tr><td colspan="7" style="text-align:center;padding:1.5rem;color:#ccc">Nenhum compromisso registrado</td></tr>`}
+    </tbody></table></div>`;
+
+  document.getElementById('mainContent').innerHTML=html;
+}
+
+// ── SALDO ─────────────────────────────────────────────────────────────────────
+function renderSaldo(a){
+  const clients=S.clients[a];
+  const dates=getWorkDates(weekOffset);
+  const todayKey=dk(new Date());
+  const todayVals=clients.map(c=>parseFloat((S.saldo[a]?.[todayKey]?.[c])||0));
+  const todayTotal=todayVals.reduce((s,v)=>s+v,0);
+  const critCount=clients.filter(c=>{const v=parseFloat((S.saldo[a]?.[todayKey]?.[c])||0);return v>0&&v<50;}).length;
+
+  let html=`
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px">
+    <div><div style="font-size:15px;font-weight:700;color:#111">${a} — Saldo de Anúncios</div>
+    <div style="font-size:12px;color:#aaa;margin-top:1px">${clients.length} clientes · valores em R$</div></div>
+  </div>
+  <div class="metrics">
+    <div class="metric"><div class="lbl">Saldo hoje</div><div class="val" style="color:#0066cc">R$${todayTotal.toLocaleString('pt-BR',{minimumFractionDigits:0})}</div></div>
+    <div class="metric"><div class="lbl">Saldo crítico (&lt;R$50)</div><div class="val" style="color:${critCount?'#cc2222':'#2a8a2a'}">${critCount}</div></div>
+  </div>
+  <div class="week-nav">
+    <button onclick="weekOffset--;renderContent()">&#8592;</button>
+    <span class="week-lbl">${weekLbl(weekOffset)}</span>
+    <button onclick="weekOffset++;renderContent()">&#8594;</button>
+    ${weekOffset?`<button class="btn" onclick="weekOffset=0;renderContent()">Hoje</button>`:''}
+  </div>
+  <div class="tbl-wrap"><table>
+    <thead><tr>
+      <th class="col-fix">Cliente</th>
+      ${dates.map(d=>`<th style="min-width:90px;color:#0066cc;${isToday(d)?'background:#e8f2ff;':''}">${fmtDate(d)}</th>`).join('')}
+    </tr></thead>
+    <tbody>
+    ${clients.map(c=>{
+      const cS=c.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+      return`<tr><td class="col-fix">${c}</td>${dates.map(d=>{
+        const dkey=dk(d);
+        const val=(S.saldo[a]?.[dkey]?.[c])||'';
+        const num=parseFloat(val||0);
+        const color=num>0&&num<50?'#cc2222':num>=50&&num<200?'#cc7700':'#0066cc';
+        return`<td style="${isToday(d)?'background:#f0f8ff':''}">
+          <input class="saldo-input" type="number" value="${val}" placeholder="—"
+            style="color:${val?color:'#ccc'}"
+            onchange="setSaldo('${a}','${dkey}','${cS}',this.value)"
+            oninput="this.style.color=parseFloat(this.value)>0&&parseFloat(this.value)<50?'#cc2222':parseFloat(this.value)>=50&&parseFloat(this.value)<200?'#cc7700':'#0066cc'">
+        </td>`;
+      }).join('')}</tr>`;
+    }).join('')}
+    </tbody></table></div>`;
+  document.getElementById('mainContent').innerHTML=html;
+}
+
+// ── HANDLERS ─────────────────────────────────────────────────────────────────
+function setCell(a,date,client,field,val){
+  if(!S.data[a])S.data[a]={};
+  if(!S.data[a][date])S.data[a][date]={};
+  if(!S.data[a][date][client])S.data[a][date][client]={};
+  S.data[a][date][client][field]=val;save();
+}
+function onCommChange(a,date,client,val,dw){
+  setCell(a,date,client,'comm',val);
+  if(dw===MON&&val)openMondayCommit(a,date,client,val);
+  else if((dw===THU||dw===FRI)&&val)openThursFriUpdate(a,date,client,val);
+  else if(val&&NEEDS_COMMENT_COMM.includes(val))openComment(a,date,client,'comm','',val);
+  else renderContent();
+}
+function onTechChange(a,date,client,val){
+  setCell(a,date,client,'tech',val);
+  if(val&&NEEDS_COMMENT_TECH.includes(val))openComment(a,date,client,'tech','',val);
+  else renderContent();
+}
+function onCompChange(a,date,client,val,dw){
+  setCell(a,date,client,'comp',val);
+  if((dw===THU||dw===FRI)&&val)openThursFriUpdate(a,date,client,val);
+  else renderContent();
+}
+function setSaldo(a,date,client,val){
+  if(!S.saldo[a])S.saldo[a]={};
+  if(!S.saldo[a][date])S.saldo[a][date]={};
+  S.saldo[a][date][client]=val;save();
+}
+
+// ── MODALS ───────────────────────────────────────────────────────────────────
+function openComment(a,date,client,field,existing,val){
+  const allLbls={...Object.fromEntries(COMM_OPTS.map(o=>[o.v,o.l])),...Object.fromEntries(TECH_OPTS.map(o=>[o.v,o.l]))};
+  const cS=client.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+  document.getElementById('modalContainer').innerHTML=`
+  <div class="modal-bg" onclick="if(event.target===this){closeModal();renderContent();}">
+    <div class="modal"><h3>O que foi feito — ${client}</h3>
+      <div style="font-size:12px;color:#aaa;margin-bottom:1rem">${allLbls[val]||val} · ${fmtShort(date)}</div>
+      <div class="field"><label>Descreva o que foi feito</label>
+        <textarea id="cm_txt" rows="4" placeholder="Ex: Enviei o novo criativo + relatório semanal...">${existing||''}</textarea>
+      </div>
+      <div class="modal-btns">
+        <button class="btn" onclick="closeModal();renderContent()">Pular</button>
+        <button class="btn btn-blue" onclick="saveComment('${a}','${date}','${cS}','${field}')">Salvar</button>
+      </div>
+    </div>
+  </div>`;}
+
+function saveComment(a,date,client,field){
+  const txt=document.getElementById('cm_txt').value.trim();
+  setCell(a,date,client,field+'_comment',txt);
+  closeModal();renderContent();
+}
+
+function openMondayCommit(a,date,client,val){
+  const cS=client.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+  document.getElementById('modalContainer').innerHTML=`
+  <div class="modal-bg" onclick="if(event.target===this){closeModal();renderContent();}">
+    <div class="modal"><h3>Compromisso da semana — ${client}</h3>
+      <div style="font-size:12px;color:#aaa;margin-bottom:1rem">Segunda-feira · ${fmtShort(date)}</div>
+      <div class="field"><label>O que você vai fazer essa semana?</label>
+        <textarea id="cp_ac" rows="2" placeholder="Ex: Vou testar 3 criativos novos de vídeo..."></textarea>
+      </div>
+      <div class="field"><label>O que vai enviar ao cliente?</label>
+        <textarea id="cp_de" rows="2" placeholder="Ex: Relatório semanal + print dos resultados..."></textarea>
+      </div>
+      <div class="field"><label>Prazo de entrega</label>
+        <input type="date" id="cp_dl" value="${getFriday(date)}">
+      </div>
+      <div class="modal-btns">
+        <button class="btn" onclick="closeModal();renderContent()">Pular</button>
+        <button class="btn btn-blue" onclick="saveMondayCommit('${a}','${cS}')">Registrar</button>
+      </div>
+    </div>
+  </div>`;}
+
+function saveMondayCommit(a,client){
+  S.commits[a].push({client,action:document.getElementById('cp_ac').value,deliver:document.getElementById('cp_de').value,deadline:document.getElementById('cp_dl').value,status:'pendente',obs:'',created:new Date().toISOString().slice(0,10)});
+  save();closeModal();renderContent();
+}
+
+function openThursFriUpdate(a,date,client,val){
+  const open=S.commits[a].map((cp,i)=>({...cp,i})).filter(cp=>cp.client===client&&cp.status!=='feito');
+  const cS=client.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+  document.getElementById('modalContainer').innerHTML=`
+  <div class="modal-bg" onclick="if(event.target===this){closeModal();renderContent();}">
+    <div class="modal"><h3>Atualizar compromisso — ${client}</h3>
+      <div style="font-size:12px;color:#aaa;margin-bottom:1rem">Qui/Sex · ${fmtShort(date)}</div>
+      ${open.length?`
+      <div class="field"><label>Compromisso</label>
+        <select id="cp_sel">${open.map(cp=>`<option value="${cp.i}">${cp.action||'Compromisso'} · prazo ${fmtShort(cp.deadline)}</option>`).join('')}</select>
+      </div>
+      <div class="field"><label>Novo status</label>
+        <select id="cp_st">${COMP_OPTS.filter(o=>o.v).map(o=>`<option value="${o.v}">${o.l}</option>`).join('')}</select>
+      </div>
+      <div class="field"><label>O que foi entregue / motivo</label>
+        <textarea id="cp_ob" rows="3" placeholder="Descreva o que entregou ou o motivo do atraso..."></textarea>
+      </div>
+      <div class="modal-btns">
+        <button class="btn" onclick="closeModal();renderContent()">Pular</button>
+        <button class="btn btn-blue" onclick="saveThursFri('${a}')">Atualizar</button>
+      </div>`:`
+      <div style="color:#aaa;font-size:13px">Nenhum compromisso aberto para ${client}.</div>
+      <div class="modal-btns"><button class="btn" onclick="closeModal();renderContent()">Fechar</button></div>`}
+    </div>
+  </div>`;}
+
+function saveThursFri(a){
+  const idx=parseInt(document.getElementById('cp_sel').value);
+  S.commits[a][idx].status=document.getElementById('cp_st').value;
+  S.commits[a][idx].obs=document.getElementById('cp_ob').value;
+  save();closeModal();renderContent();
+}
+
+function openAddCommit(a){
+  document.getElementById('modalContainer').innerHTML=`
+  <div class="modal-bg" onclick="if(event.target===this)closeModal()">
+    <div class="modal"><h3>Novo compromisso — ${a}</h3>
+      <div class="field"><label>Cliente</label><select id="cp_cl"><option value="">— Geral —</option>${S.clients[a].map(c=>`<option value="${c}">${c}</option>`).join('')}</select></div>
+      <div class="field"><label>O que vai fazer</label><textarea id="cp_ac" rows="2" placeholder="Ex: Testar 2 criativos novos..."></textarea></div>
+      <div class="field"><label>O que vai enviar ao cliente</label><textarea id="cp_de" rows="2" placeholder="Ex: Relatório + print de resultado..."></textarea></div>
+      <div class="field"><label>Prazo de entrega</label><input type="date" id="cp_dl" value="${new Date().toISOString().slice(0,10)}"></div>
+      <div class="field"><label>Status</label><select id="cp_st">${COMP_OPTS.filter(o=>o.v).map(o=>`<option value="${o.v}">${o.l}</option>`).join('')}</select></div>
+      <div class="field"><label>Observação</label><textarea id="cp_ob" rows="2"></textarea></div>
+      <div class="modal-btns">
+        <button class="btn" onclick="closeModal()">Cancelar</button>
+        <button class="btn btn-blue" onclick="saveCommit('${a}',null)">Salvar</button>
+      </div>
+    </div>
+  </div>`;}
+
+function openEditCommit(a,idx){
+  const cp=S.commits[a][idx];
+  document.getElementById('modalContainer').innerHTML=`
+  <div class="modal-bg" onclick="if(event.target===this)closeModal()">
+    <div class="modal"><h3>Editar compromisso — ${a}</h3>
+      <div class="field"><label>Cliente</label><select id="cp_cl"><option value="">— Geral —</option>${S.clients[a].map(c=>`<option value="${c}"${cp.client===c?' selected':''}>${c}</option>`).join('')}</select></div>
+      <div class="field"><label>O que vai fazer</label><textarea id="cp_ac" rows="2">${cp.action||''}</textarea></div>
+      <div class="field"><label>O que vai enviar ao cliente</label><textarea id="cp_de" rows="2">${cp.deliver||''}</textarea></div>
+      <div class="field"><label>Prazo de entrega</label><input type="date" id="cp_dl" value="${cp.deadline||''}"></div>
+      <div class="field"><label>Status</label><select id="cp_st">${COMP_OPTS.filter(o=>o.v).map(o=>`<option value="${o.v}"${cp.status===o.v?' selected':''}>${o.l}</option>`).join('')}</select></div>
+      <div class="field"><label>Observação</label><textarea id="cp_ob" rows="2">${cp.obs||''}</textarea></div>
+      <div class="modal-btns">
+        <button class="btn btn-red" onclick="delCommit('${a}',${idx})">Remover</button>
+        <button class="btn" onclick="closeModal()">Cancelar</button>
+        <button class="btn btn-blue" onclick="saveCommit('${a}',${idx})">Salvar</button>
+      </div>
+    </div>
+  </div>`;}
+
+function saveCommit(a,idx){
+  const e={client:document.getElementById('cp_cl').value,action:document.getElementById('cp_ac').value,deliver:document.getElementById('cp_de').value,deadline:document.getElementById('cp_dl').value,status:document.getElementById('cp_st').value,obs:document.getElementById('cp_ob').value,created:new Date().toISOString().slice(0,10)};
+  if(idx===null)S.commits[a].push(e);else S.commits[a][idx]=e;
+  save();closeModal();renderContent();
+}
+function delCommit(a,idx){if(!confirm('Remover?'))return;S.commits[a].splice(idx,1);save();closeModal();renderContent();}
+function openAddClient(a){
+  document.getElementById('modalContainer').innerHTML=`
+  <div class="modal-bg" onclick="if(event.target===this)closeModal()">
+    <div class="modal"><h3>Adicionar cliente — ${a}</h3>
+      <div class="field"><label>Nome</label><input id="nc" placeholder="NOME DO CLIENTE" autofocus onkeydown="if(event.key==='Enter')confirmAddClient('${a}')"></div>
+      <div class="modal-btns">
+        <button class="btn" onclick="closeModal()">Cancelar</button>
+        <button class="btn btn-blue" onclick="confirmAddClient('${a}')">Adicionar</button>
+      </div>
+    </div>
+  </div>`;}
+function confirmAddClient(a){
+  const v=document.getElementById('nc').value.trim().toUpperCase();
+  if(!v)return;
+  if(S.clients[a].includes(v)){alert('Já existe!');return;}
+  S.clients[a].push(v);save();closeModal();renderContent();
+}
+function removeClient(a,c){if(!confirm(`Remover "${c}"?`))return;S.clients[a]=S.clients[a].filter(x=>x!==c);save();renderContent();}
+function closeModal(){document.getElementById('modalContainer').innerHTML='';}
+
+function renderContent(){
+  if(currentMain==='visao_geral')renderOverview();
+  else if(currentSub[currentMain]==='saldo')renderSaldo(currentMain);
+  else renderAtividade(currentMain);
+}
+
+// ASANA CONFIG
+const _PROXY = "https://jolly-math-4ed1asana-proxy-mw.marcoossoares.workers.dev";
+const _TOKEN = "2/1206280041915174/1213998126372888:8182a780885a79e753f3f452c086cfe7";
+const _PROJECTS = {"Gabriella":"1210898299061600","Gustavo":"1210229110233855","Gabriel":"1206887016012730","Julio":"1207716199226003"};
+
+async function _asanaReq(path, method, body) {
+  const opts = {method: method||'GET', headers:{'Authorization':'Bearer '+_TOKEN,'Accept':'application/json'}};
+  if(body) { opts.headers['Content-Type']='application/json'; opts.body=JSON.stringify(body); }
+  const r = await fetch(_PROXY+path, opts);
+  if(!r.ok) throw new Error('Asana '+r.status);
+  return r.json();
+}
+
+async function asanaCreateTask(assessor, client, action, deadline) {
+  if(!_PROJECTS[assessor]) return;
+  try {
+    const pid = _PROJECTS[assessor];
+    // find Demandas Pessoais section
+    const secs = await _asanaReq('/sections?project='+pid+'&opt_fields=name,gid');
+    const sec = secs.data.find(s => s.name==='Demandas Pessoais');
+    const body = {data:{name:'['+client+'] '+action,projects:[pid],due_on:deadline||null,notes:'Dashboard MW Digital'}};
+    if(sec) body.data.memberships=[{project:pid,section:sec.gid}];
+    await _asanaReq('/tasks','POST',body);
+  } catch(e) { console.error('Asana create:',e); }
+}
+
+async function loadAsanaBlock(a) {
+  const el = document.getElementById('asana-'+a);
+  if(!el) return;
+  el.innerHTML = '<div class="asana-loading">⏳ Carregando...</div>';
+  try {
+    const pid = _PROJECTS[a];
+    if(!pid) { el.innerHTML='<div class="asana-err">Projeto não configurado</div>'; return; }
+    const today = new Date().toISOString().slice(0,10);
+    // Get all sections
+    const secsData = await _asanaReq('/sections?project='+pid+'&opt_fields=name,gid');
+    const sections = secsData.data;
+    // Get all overdue/today tasks
+    const tasksData = await _asanaReq('/tasks?project='+pid+'&opt_fields=name,due_on,completed,memberships.section.name,memberships.section.gid,permalink_url&completed_since=now&limit=200');
+    const tasks = tasksData.data.filter(t => !t.completed && t.due_on && t.due_on <= today);
+    if(!tasks.length && !sections.length) { el.innerHTML='<div style="font-size:12px;color:#2a8a4a;padding:.5rem;background:#f0fdf5;border-radius:8px">✅ Nenhuma tarefa atrasada</div>'; return; }
+    // Group by section
+    const bySection = {};
+    sections.forEach(s => { bySection[s.name] = {gid:s.gid, overdue:[], today:[]}; });
+    bySection['Sem seção'] = {gid:'', overdue:[], today:[]};
+    tasks.forEach(t => {
+      const secName = (t.memberships && t.memberships[0] && t.memberships[0].section) ? t.memberships[0].section.name : 'Sem seção';
+      if(!bySection[secName]) bySection[secName] = {gid:'', overdue:[], today:[]};
+      if(t.due_on < today) bySection[secName].overdue.push(t);
+      else bySection[secName].today.push(t);
+    });
+    // Build cards — only sections with tasks
+    const cards = Object.entries(bySection)
+      .filter(([name, data]) => data.overdue.length + data.today.length > 0)
+      .map(([name, data]) => {
+        const total = data.overdue.length + data.today.length;
+        const hasOverdue = data.overdue.length > 0;
+        const hasToday = !hasOverdue && data.today.length > 0;
+        const cssClass = hasOverdue ? 'has-overdue' : hasToday ? 'has-today' : 'all-ok';
+        const countColor = hasOverdue ? 'red' : hasToday ? 'amber' : 'green';
+        const sub = hasOverdue ? data.overdue.length+' atrasada'+(data.overdue.length>1?'s':'') + (data.today.length?' + '+data.today.length+' hoje':'') : data.today.length+' vence hoje';
+        const asanaLink = 'https://app.asana.com/0/'+pid+(data.gid?'/'+data.gid:'');
+        return '<div class="asana-sec-card '+cssClass+'"><div class="asana-sec-name" title="'+name+'">'+name+'</div><div class="asana-sec-count '+countColor+'">'+total+'</div><div class="asana-sec-sub">'+sub+'</div><a class="asana-sec-link" href="'+asanaLink+'" target="_blank">Ver no Asana ↗</a></div>';
+      });
+    if(!cards.length) {
+      el.innerHTML = '<div style="font-size:12px;color:#2a8a4a;padding:.5rem;background:#f0fdf5;border-radius:8px">✅ Nenhuma tarefa atrasada ou com prazo hoje</div>';
+    } else {
+      el.innerHTML = '<div class="asana-sections">'+cards.join('')+'</div>';
+    }
+  } catch(e) {
+    el.innerHTML = '<div class="asana-err">Erro: '+e.message+'</div>';
+  }
+}
+
+renderTabs();renderContent();
+</script>
+</body>
+</html>
