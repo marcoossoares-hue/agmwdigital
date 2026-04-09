@@ -118,33 +118,33 @@ th.t-comp{background:#eeddff;color:#6622bb}
 .comp-table tr:last-child td{border-bottom:none}
 .comp-table tr:hover td{background:#fafafa}
 
-
-/* ASANA */
 .asana-wrap{margin-bottom:1.25rem}
-.asana-title{font-size:11px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.6rem;display:flex;align-items:center;gap:8px}
+.asana-title{font-size:11px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem;display:flex;align-items:center;gap:8px}
 .asana-pill{font-size:10px;background:#f3eeff;color:#6a3db5;padding:2px 8px;border-radius:20px;font-weight:600}
-.asana-loading{font-size:12px;color:#aaa;padding:.5rem 0}
-.asana-error{font-size:12px;color:#d43f3f;padding:.6rem .8rem;background:#fff5f5;border-radius:8px}
-.asana-empty{font-size:12px;color:#2a8a4a;padding:.75rem;text-align:center;background:#f0fdf5;border-radius:8px;border:1px dashed #b6e8c8}
-.asana-card{background:#fff;border:1.5px solid #fcc;border-radius:10px;padding:.65rem 1rem;margin-bottom:7px;border-left:4px solid #d43f3f}
-.asana-card.due-today{border-color:#f0d080;border-left-color:#c07a10;background:#fffbf0}
-.asana-card .t-name{font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:3px}
-.asana-card .t-meta{font-size:11px;color:#aaa;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.asana-card .t-due{color:#d43f3f;font-weight:700}
-.asana-card.due-today .t-due{color:#c07a10}
+.asana-sections{display:flex;gap:10px;flex-wrap:wrap}
+.asana-sec-card{background:#fff;border:1.5px solid #e0e4eb;border-radius:10px;padding:.75rem 1rem;flex:1;min-width:140px;max-width:220px}
+.asana-sec-card.has-overdue{border-color:#fcc;border-left:4px solid #d43f3f}
+.asana-sec-card.has-today{border-color:#f0d080;border-left:4px solid #c07a10}
+.asana-sec-card.all-ok{border-color:#b6e8c8;border-left:4px solid #2a8a4a}
+.asana-sec-name{font-size:11px;font-weight:600;color:#555;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.asana-sec-count{font-size:22px;font-weight:700;line-height:1}
+.asana-sec-count.red{color:#d43f3f}
+.asana-sec-count.amber{color:#c07a10}
+.asana-sec-count.green{color:#2a8a4a}
+.asana-sec-sub{font-size:10px;color:#aaa;margin-top:2px}
+.asana-sec-link{font-size:10px;color:#0070cc;text-decoration:none;display:inline-block;margin-top:6px}
+.asana-sec-link:hover{text-decoration:underline}
+.asana-loading{font-size:12px;color:#aaa;padding:.4rem 0}
+.asana-err{font-size:12px;color:#d43f3f;padding:.6rem;background:#fff5f5;border-radius:8px}
 </style>
 </head>
 <body>
 <div class="header"><h1>MW Digital</h1><p>Acompanhamento diário da equipe</p></div>
-
-</div>
 <div class="main-tabs" id="mainTabs"></div>
 <div class="sub-tabs" id="subTabs" style="display:none"></div>
 <div class="content" id="mainContent"></div>
 <div id="modalContainer"></div>
 <script>
-
-
 const ASSESSORES=["Gabriella","Gustavo","Gabriel","Julio"];
 const DEFAULT_CLIENTS={
   "Gabriella":["RE+","NENA PAIVA","PIZZERIA VESUVIO","MIMOS","ENCANTO MÓVEIS","CLEICE","DR. VIRGILIO","DR. RENATO TRINTA","DR. FLAVIO","DALENA","SOUL COSMÉTICOS","DEGUTTI REC E TAM","DRA. LARYSSA AZEVEDO","BUDDHA SPA"],
@@ -154,9 +154,9 @@ const DEFAULT_CLIENTS={
 };
 const COMM_OPTS=[{v:"",l:"—"},{v:"relatorio",l:"Relatório"},{v:"entrega",l:"Entrega Task"},{v:"feedback",l:"Feedback"},{v:"cliente",l:"Cliente Falou"},{v:"cobrar",l:"Cobrar Pend."},{v:"perguntou",l:"Perguntou"},{v:"nada",l:"Sem nec."}];
 const TECH_OPTS=[{v:"",l:"—"},{v:"sat",l:"Resultados ok"},{v:"otim",l:"Otimização"},{v:"janela",l:"Janela análise"},{v:"criativos",l:"Nec. criativos"},{v:"saldo",l:"Saldo esgotado"},{v:"saldo_fin",l:"Saldo finalizando"},{v:"nsat",l:"Result. ruins"},{v:"pausada",l:"Pausada"},{v:"dep_ext",l:"Dep. externa"},{v:"reuniao",l:"Reunião urgente"},{v:"start",l:"Em start"}];
-const COMP_OPTS=[{v:"",l:"—"},{v:"compromisso",l:"Fiz um compromisso"},{v:"pendente",l:"Pendente"},{v:"feito",l:"Feito"},{v:"parcial",l:"Parcial"},{v:"nao_feito",l:"Não feito"},{v:"aguardando",l:"Aguardando"}];
-const COMP_COLORS={compromisso:"bg-purple",pendente:"bg-amber",feito:"bg-green",parcial:"bg-blue",nao_feito:"bg-red",aguardando:"bg-gray"};
-const NEEDS_COMMENT_COMM=["entrega","cobrar","relatorio"];
+const COMP_OPTS=[{v:"",l:"—"},{v:"pendente",l:"Pendente"},{v:"feito",l:"Feito"},{v:"parcial",l:"Parcial"},{v:"nao_feito",l:"Não feito"},{v:"aguardando",l:"Aguardando"}];
+const COMP_COLORS={pendente:"bg-amber",feito:"bg-green",parcial:"bg-blue",nao_feito:"bg-red",aguardando:"bg-gray"};
+const NEEDS_COMMENT_COMM=["entrega","cobrar"];
 const NEEDS_COMMENT_TECH=["sat","otim"];
 const MON=1,THU=4,FRI=5;
 
@@ -198,103 +198,7 @@ function renderTabs(){
       <button class="sub-tab${currentSub[currentMain]===s?' active':''}" onclick="switchSub('${s}')">${s==='atividade'?'Atividade':'Saldo de Anúncios'}</button>`).join('');
   } else stEl.style.display='none';
 }
-function switchMain(t){currentMain=t;
-// ── ASANA CONFIG ─────────────────────────────────────────────────────────────
-const PROXY = "https://jolly-math-4ed1asana-proxy-mw.marcoossoares.workers.dev";
-const ASANA_PROJECTS = {
-  "Gabriella": "1206887016012730",
-  "Gustavo":   "1210898299061600",
-  "Gabriel":   "1210229110233855",
-  "Julio":     "1207716199226003"
-};
-const ASANA_SECTION = "Demandas Pessoais";
-
-function getToken(){return '2/1206280041915174/1213998126372888:8182a780885a79e753f3f452c086cfe7';}
-
-async function asanaGet(path){
-  const token=getToken();
-  if(!token) throw new Error('Token não configurado');
-  const r=await fetch(PROXY+path,{
-    headers:{'Authorization':'Bearer '+token,'Accept':'application/json'}
-  });
-  if(r.status===401) throw new Error('Token inválido');
-  if(!r.ok) throw new Error('Erro '+r.status);
-  return r.json();
-}
-
-async function asanaPost(path,body){
-  const token=getToken();
-  if(!token) return;
-  await fetch(PROXY+path,{
-    method:'POST',
-    headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},
-    body:JSON.stringify(body)
-  });
-}
-
-async function asanaSectionId(pid){
-  try{
-    const d=await asanaGet('/sections?project='+pid+'&opt_fields=name,gid');
-    const s=d.data.find(x=>x.name===ASANA_SECTION);
-    return s?s.gid:null;
-  }catch(e){return null;}
-}
-
-async function asanaCreateTask(assessor,client,action,deadline){
-  const token=getToken();
-  if(!token||!ASANA_PROJECTS[assessor]) return;
-  try{
-    const pid=ASANA_PROJECTS[assessor];
-    const sid=await asanaSectionId(pid);
-    const body={data:{
-      name:'['+client+'] '+action,
-      projects:[pid],
-      due_on:deadline||null,
-      notes:'Criado via Dashboard MW Digital'
-    }};
-    if(sid) body.data.memberships=[{project:pid,section:sid}];
-    await asanaPost('/tasks',body);
-    console.log('✅ Tarefa criada no Asana:',client,action);
-  }catch(e){console.error('Asana create:',e);}
-}
-
-async function loadAsanaBlock(a){
-  const el=document.getElementById('asana-'+a);
-  if(!el) return;
-  const token=getToken();
-  if(!token){
-    el.innerHTML='<div class="asana-error">⚠️ Token não configurado. Cole seu token do Asana abaixo e salve.</div>';
-    return;
-  }
-  el.innerHTML='<div class="asana-loading">⏳ Carregando tarefas do Asana...</div>';
-  try{
-    const pid=ASANA_PROJECTS[a];
-    if(!pid){el.innerHTML='<div class="asana-error">Projeto não configurado para '+a+'</div>';return;}
-    const today=new Date().toISOString().slice(0,10);
-    const d=await asanaGet('/tasks?project='+pid+'&opt_fields=name,due_on,completed,assignee.name,permalink_url&completed_since=now&limit=100');
-    const overdue=d.data.filter(t=>!t.completed&&t.due_on&&t.due_on<today);
-    const dueToday=d.data.filter(t=>!t.completed&&t.due_on===today);
-    const all=[...overdue,...dueToday];
-    if(!all.length){el.innerHTML='<div class="asana-empty">✅ Nenhuma tarefa atrasada ou com prazo hoje</div>';return;}
-    el.innerHTML=all.map(t=>{
-      const tod=t.due_on===today;
-      return`<div class="asana-card${tod?' due-today':''}">
-        <div class="t-name">${t.name}</div>
-        <div class="t-meta">
-          <span class="t-due">${tod?'⏰ Hoje':fmtShort(t.due_on)}</span>
-          ${t.assignee?.name?`<span>${t.assignee.name}</span>`:''}
-          <a href="${t.permalink_url}" target="_blank" style="color:#0070cc;text-decoration:none">Abrir no Asana ↗</a>
-        </div>
-      </div>`;
-    }).join('');
-  }catch(e){el.innerHTML='<div class="asana-error">Erro: '+e.message+'</div>';}
-}
-
-
-
-renderTabs();renderContent();}
-
-renderTabs();renderContent();
+function switchMain(t){currentMain=t;renderTabs();renderContent();}
 function switchSub(s){currentSub[currentMain]=s;renderTabs();renderContent();}
 
 // ── OVERVIEW ─────────────────────────────────────────────────────────────────
@@ -410,12 +314,7 @@ function renderAtividade(a){
     <div class="metric"><div class="lbl">Comp. abertos</div><div class="val" style="color:${overdueComps?'#cc2222':'#111'}">${openComps}</div></div>
   </div>`;
 
-  html+=`<div class="asana-wrap">
-    <div class="asana-title">Tarefas atrasadas <span class="asana-pill">Asana</span>
-    </div>
-    <div id="asana-${a}"><div class="asana-loading">⏳ Carregando...</div></div>
-  </div>`;
-
+  html+=`<div class="asana-wrap"><div class="asana-title">Tarefas atrasadas <span class="asana-pill">Asana</span></div><div id="asana-${a}" class="asana-loading">⏳ Carregando...</div></div>`;
   const allCounts=[...Object.entries(cc),...Object.entries(tc),...Object.entries(pc)];
   if(allCounts.length){
     html+=`<div class="pill-row">${allCounts.sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<span class="pill vc-${k} vt-${k} vp-${k}">${allLbls[k]||k}: <strong>${v}</strong></span>`).join('')}</div>`;
@@ -536,31 +435,6 @@ function renderAtividade(a){
     </div>`;
   }
 
-  // Compromissos no topo
-  html+=`<div style="display:flex;align-items:center;justify-content:space-between;margin:.25rem 0 .6rem"><span class="sec" style="margin:0">Compromissos</span><button class="btn btn-primary" style="font-size:11px" onclick="openAddCommit('${a}')">+ Novo</button></div>
-  <div class="tbl-wrap" style="margin-bottom:1.25rem"><table class="comp-table">
-    <thead><tr><th>Cliente</th><th>Compromisso</th><th>O que vai enviar</th><th>Prazo</th><th>Status</th><th>Obs</th><th></th></tr></thead>
-    <tbody>${S.commits[a].length?S.commits[a].map((cp,i)=>{
-      const urgent=isOverdue(cp.deadline,cp.status);
-      const dueToday=cp.deadline===dk(new Date())&&cp.status!=='feito';
-      return`<tr style="${dueToday?'background:#fff8f2':urgent?'background:#fff5f5':''}">
-        <td style="font-weight:600;color:#111;white-space:nowrap">${cp.client||'—'}</td>
-        <td style="max-width:160px">${cp.action||'—'}</td>
-        <td style="max-width:120px;color:#0066cc">${cp.deliver||'—'}</td>
-        <td>
-          <span class="${urgent?'overdue':''}">${fmtShort(cp.deadline)}</span>
-          ${dueToday?`<span style="font-size:10px;background:#fff0e0;color:#c07000;font-weight:700;padding:1px 5px;border-radius:4px;margin-left:3px">⏰ HOJE</span>`:''}
-          ${urgent?`<span style="font-size:10px;background:#fff0f0;color:#d43f3f;font-weight:700;padding:1px 5px;border-radius:4px;margin-left:3px">VENCIDO</span>`:''}
-        </td>
-        <td><span class="badge ${COMP_COLORS[cp.status]||'bg-gray'}">${cp.status||'—'}</span></td>
-        <td style="font-size:11px;color:#aaa;max-width:100px">${cp.obs||'—'}</td>
-        <td><button class="btn" style="font-size:10px;padding:2px 7px" onclick="openEditCommit('${a}',${i})">Editar</button></td>
-      </tr>`;
-    }).join(''):`<tr><td colspan="7" style="text-align:center;padding:1rem;color:#ccc;font-size:12px">Nenhum compromisso registrado</td></tr>`}
-    </tbody></table></div>`;
-
-  document.getElementById('mainContent').innerHTML=html;
-
   html+=`<div class="week-nav">
     <button onclick="weekOffset--;renderContent()">&#8592;</button>
     <span class="week-lbl">${weekLbl(weekOffset)}</span>
@@ -609,6 +483,20 @@ function renderAtividade(a){
     html+=`<td style="text-align:center;padding:0 4px"><button class="btn btn-red" style="font-size:10px;padding:2px 6px" onclick="removeClient('${a}','${cS}')">✕</button></td></tr>`;
   });
   html+=`</tbody></table></div>`;
+
+  html+=`<div class="sec"><span>Compromissos</span><button class="btn btn-blue" style="font-size:11px" onclick="openAddCommit('${a}')">+ Novo</button></div>
+  <div class="tbl-wrap"><table class="comp-table">
+    <thead><tr><th>Cliente</th><th>O que vai fazer</th><th>O que vai enviar</th><th>Prazo</th><th>Status</th><th>Obs</th><th></th></tr></thead>
+    <tbody>${S.commits[a].length?S.commits[a].map((cp,i)=>`<tr>
+      <td style="font-weight:600;color:#111;white-space:nowrap">${cp.client||'—'}</td>
+      <td style="max-width:140px">${cp.action||'—'}</td>
+      <td style="max-width:130px;color:#0066cc">${cp.deliver||'—'}</td>
+      <td class="${isOverdue(cp.deadline,cp.status)?'overdue':''}">${fmtShort(cp.deadline)}</td>
+      <td><span class="badge ${COMP_COLORS[cp.status]||'bg-gray'}">${cp.status||'—'}</span></td>
+      <td style="font-size:11px;color:#aaa;max-width:110px">${cp.obs||'—'}</td>
+      <td><button class="btn" style="font-size:10px;padding:2px 7px" onclick="openEditCommit('${a}',${i})">Editar</button></td>
+    </tr>`).join(''):`<tr><td colspan="7" style="text-align:center;padding:1.5rem;color:#ccc">Nenhum compromisso registrado</td></tr>`}
+    </tbody></table></div>`;
 
   document.getElementById('mainContent').innerHTML=html;
 }
@@ -683,39 +571,8 @@ function onTechChange(a,date,client,val){
 }
 function onCompChange(a,date,client,val,dw){
   setCell(a,date,client,'comp',val);
-  if(val==='compromisso') openInlineCommit(a,date,client);
-  else if((dw===THU||dw===FRI)&&val) openThursFriUpdate(a,date,client,val);
+  if((dw===THU||dw===FRI)&&val)openThursFriUpdate(a,date,client,val);
   else renderContent();
-}
-
-function openInlineCommit(a,date,client){
-  const cS=client.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-  document.getElementById('modalContainer').innerHTML=`
-  <div class="modal-bg" onclick="if(event.target===this){closeModal();renderContent();}">
-    <div class="modal">
-      <h3>Compromisso com o cliente</h3>
-      <div style="font-size:12px;color:#aaa;margin-bottom:1rem">${client} · ${fmtShort(date)}</div>
-      <div class="field"><label>Qual foi o compromisso?</label>
-        <textarea id="ic_action" rows="3" placeholder="Ex: Vou enviar o relatório com os resultados da semana..."></textarea>
-      </div>
-      <div class="field"><label>Data de entrega</label>
-        <input type="date" id="ic_deadline" value="${getFriday(date)}">
-      </div>
-      <div class="modal-btns">
-        <button class="btn" onclick="closeModal();renderContent()">Pular</button>
-        <button class="btn btn-primary" onclick="saveInlineCommit('${a}','${cS}','${date}')">Registrar</button>
-      </div>
-    </div>
-  </div>`;}
-
-function saveInlineCommit(a,client,date){
-  const action=document.getElementById('ic_action').value.trim();
-  const deadline=document.getElementById('ic_deadline').value;
-  if(!action){closeModal();renderContent();return;}
-  S.commits[a].push({client,action,deliver:'',deadline,status:'pendente',obs:'Gerado via compromisso em '+fmtShort(date),created:date});
-  save();
-  asanaCreateTask(a,client,action,deadline);
-  closeModal();renderContent();
 }
 function setSaldo(a,date,client,val){
   if(!S.saldo[a])S.saldo[a]={};
@@ -770,13 +627,8 @@ function openMondayCommit(a,date,client,val){
   </div>`;}
 
 function saveMondayCommit(a,client){
-  const action=document.getElementById('cp_ac').value;
-  const deliver=document.getElementById('cp_de').value;
-  const deadline=document.getElementById('cp_dl').value;
-  S.commits[a].push({client,action,deliver,deadline,status:'pendente',obs:'',created:new Date().toISOString().slice(0,10)});
-  save();
-  asanaCreateTask(a,client,action,deadline);
-  closeModal();renderContent();
+  S.commits[a].push({client,action:document.getElementById('cp_ac').value,deliver:document.getElementById('cp_de').value,deadline:document.getElementById('cp_dl').value,status:'pendente',obs:'',created:new Date().toISOString().slice(0,10)});
+  save();closeModal();renderContent();
 }
 
 function openThursFriUpdate(a,date,client,val){
@@ -850,11 +702,8 @@ function openEditCommit(a,idx){
 
 function saveCommit(a,idx){
   const e={client:document.getElementById('cp_cl').value,action:document.getElementById('cp_ac').value,deliver:document.getElementById('cp_de').value,deadline:document.getElementById('cp_dl').value,status:document.getElementById('cp_st').value,obs:document.getElementById('cp_ob').value,created:new Date().toISOString().slice(0,10)};
-  const isNew=idx===null;
-  if(isNew)S.commits[a].push(e);else S.commits[a][idx]=e;
-  save();
-  if(isNew) asanaCreateTask(a,e.client,e.action,e.deadline);
-  closeModal();renderContent();
+  if(idx===null)S.commits[a].push(e);else S.commits[a][idx]=e;
+  save();closeModal();renderContent();
 }
 function delCommit(a,idx){if(!confirm('Remover?'))return;S.commits[a].splice(idx,1);save();closeModal();renderContent();}
 function openAddClient(a){
@@ -882,6 +731,81 @@ function renderContent(){
   else if(currentSub[currentMain]==='saldo')renderSaldo(currentMain);
   else renderAtividade(currentMain);
 }
+
+// ASANA CONFIG
+const _PROXY = "https://jolly-math-4ed1asana-proxy-mw.marcoossoares.workers.dev";
+const _TOKEN = "2/1206280041915174/1213998126372888:8182a780885a79e753f3f452c086cfe7";
+const _PROJECTS = {"Gabriella":"1206887016012730","Gustavo":"1210898299061600","Gabriel":"1210229110233855","Julio":"1207716199226003"};
+
+async function _asanaReq(path, method, body) {
+  const opts = {method: method||'GET', headers:{'Authorization':'Bearer '+_TOKEN,'Accept':'application/json'}};
+  if(body) { opts.headers['Content-Type']='application/json'; opts.body=JSON.stringify(body); }
+  const r = await fetch(_PROXY+path, opts);
+  if(!r.ok) throw new Error('Asana '+r.status);
+  return r.json();
+}
+
+async function asanaCreateTask(assessor, client, action, deadline) {
+  if(!_PROJECTS[assessor]) return;
+  try {
+    const pid = _PROJECTS[assessor];
+    // find Demandas Pessoais section
+    const secs = await _asanaReq('/sections?project='+pid+'&opt_fields=name,gid');
+    const sec = secs.data.find(s => s.name==='Demandas Pessoais');
+    const body = {data:{name:'['+client+'] '+action,projects:[pid],due_on:deadline||null,notes:'Dashboard MW Digital'}};
+    if(sec) body.data.memberships=[{project:pid,section:sec.gid}];
+    await _asanaReq('/tasks','POST',body);
+  } catch(e) { console.error('Asana create:',e); }
+}
+
+async function loadAsanaBlock(a) {
+  const el = document.getElementById('asana-'+a);
+  if(!el) return;
+  el.innerHTML = '<div class="asana-loading">⏳ Carregando...</div>';
+  try {
+    const pid = _PROJECTS[a];
+    if(!pid) { el.innerHTML='<div class="asana-err">Projeto não configurado</div>'; return; }
+    const today = new Date().toISOString().slice(0,10);
+    // Get all sections
+    const secsData = await _asanaReq('/sections?project='+pid+'&opt_fields=name,gid');
+    const sections = secsData.data;
+    // Get all overdue/today tasks
+    const tasksData = await _asanaReq('/tasks?project='+pid+'&opt_fields=name,due_on,completed,memberships.section.name,memberships.section.gid,permalink_url&completed_since=now&limit=200');
+    const tasks = tasksData.data.filter(t => !t.completed && t.due_on && t.due_on <= today);
+    if(!tasks.length && !sections.length) { el.innerHTML='<div style="font-size:12px;color:#2a8a4a;padding:.5rem;background:#f0fdf5;border-radius:8px">✅ Nenhuma tarefa atrasada</div>'; return; }
+    // Group by section
+    const bySection = {};
+    sections.forEach(s => { bySection[s.name] = {gid:s.gid, overdue:[], today:[]}; });
+    bySection['Sem seção'] = {gid:'', overdue:[], today:[]};
+    tasks.forEach(t => {
+      const secName = (t.memberships && t.memberships[0] && t.memberships[0].section) ? t.memberships[0].section.name : 'Sem seção';
+      if(!bySection[secName]) bySection[secName] = {gid:'', overdue:[], today:[]};
+      if(t.due_on < today) bySection[secName].overdue.push(t);
+      else bySection[secName].today.push(t);
+    });
+    // Build cards — only sections with tasks
+    const cards = Object.entries(bySection)
+      .filter(([name, data]) => data.overdue.length + data.today.length > 0)
+      .map(([name, data]) => {
+        const total = data.overdue.length + data.today.length;
+        const hasOverdue = data.overdue.length > 0;
+        const hasToday = !hasOverdue && data.today.length > 0;
+        const cssClass = hasOverdue ? 'has-overdue' : hasToday ? 'has-today' : 'all-ok';
+        const countColor = hasOverdue ? 'red' : hasToday ? 'amber' : 'green';
+        const sub = hasOverdue ? data.overdue.length+' atrasada'+(data.overdue.length>1?'s':'') + (data.today.length?' + '+data.today.length+' hoje':'') : data.today.length+' vence hoje';
+        const asanaLink = 'https://app.asana.com/0/'+pid+(data.gid?'/'+data.gid:'');
+        return '<div class="asana-sec-card '+cssClass+'"><div class="asana-sec-name" title="'+name+'">'+name+'</div><div class="asana-sec-count '+countColor+'">'+total+'</div><div class="asana-sec-sub">'+sub+'</div><a class="asana-sec-link" href="'+asanaLink+'" target="_blank">Ver no Asana ↗</a></div>';
+      });
+    if(!cards.length) {
+      el.innerHTML = '<div style="font-size:12px;color:#2a8a4a;padding:.5rem;background:#f0fdf5;border-radius:8px">✅ Nenhuma tarefa atrasada ou com prazo hoje</div>';
+    } else {
+      el.innerHTML = '<div class="asana-sections">'+cards.join('')+'</div>';
+    }
+  } catch(e) {
+    el.innerHTML = '<div class="asana-err">Erro: '+e.message+'</div>';
+  }
+}
+
 renderTabs();renderContent();
 </script>
 </body>
