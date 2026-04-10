@@ -735,7 +735,7 @@ function renderContent(){
 // ASANA CONFIG
 const _PROXY = "https://jolly-math-4ed1asana-proxy-mw.marcoossoares.workers.dev";
 const _TOKEN = "2/1206280041915174/1213998126372888:8182a780885a79e753f3f452c086cfe7";
-const _PROJECTS = {"Gabriella":"1206887016012730","Gustavo":"1210898299061600","Gabriel":"1210229110233855","Julio":"1207716199226003"};
+const _PROJECTS = {"Gabriella":"1210898299061600","Gustavo":"1210229110233855","Gabriel":"1206887016012730","Julio":"1207716199226003"};
 
 async function _asanaReq(path, method, body) {
   const opts = {method: method||'GET', headers:{'Authorization':'Bearer '+_TOKEN,'Accept':'application/json'}};
@@ -770,7 +770,7 @@ async function loadAsanaBlock(a) {
     const secsData = await _asanaReq('/sections?project='+pid+'&opt_fields=name,gid');
     const sections = secsData.data;
     // Get all overdue/today tasks
-    const tasksData = await _asanaReq('/tasks?project='+pid+'&opt_fields=name,due_on,completed,memberships.section.name,memberships.section.gid,permalink_url&completed_since=now&limit=200');
+    const tasksData = await _asanaReq('/tasks?project='+pid+'&opt_fields=name,due_on,completed,permalink_url&limit=200');
     const tasks = tasksData.data.filter(t => !t.completed && t.due_on && t.due_on <= today);
     if(!tasks.length && !sections.length) { el.innerHTML='<div style="font-size:12px;color:#2a8a4a;padding:.5rem;background:#f0fdf5;border-radius:8px">✅ Nenhuma tarefa atrasada</div>'; return; }
     // Group by section
